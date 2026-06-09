@@ -1,5 +1,5 @@
+# counter/middleware.py
 from .models import Visitor, TotalRequest
-from datetime import date
 import requests
 
 def get_country(ip):
@@ -7,7 +7,6 @@ def get_country(ip):
         return 'Tashkent'
     if ip in ['0.0.0.0', '127.0.0.1', 'localhost']:
         return 'Tashkent'
-    
     try:
         response = requests.get(f'http://ip-api.com/json/{ip}', timeout=2)
         data = response.json()
@@ -15,7 +14,6 @@ def get_country(ip):
             return data.get('country', 'Unknown')
     except:
         pass
-    
     return 'Unknown'
 
 class CounterMiddleware:
@@ -31,19 +29,13 @@ class CounterMiddleware:
                 ip = '0.0.0.0'
             if ',' in ip:
                 ip = ip.split(',')[0].strip()
-
-        
             
             total, _ = TotalRequest.objects.get_or_create(id=1)
             total.count += 1
             total.save()
             
             country = get_country(ip)
-            visitor, created = Visitor.objects.get_or_create(
-                ip=ip,
-                defaults={'country': country}
-            )
-            
+            visitor, created = Visitor.objects.get_or_create(ip=ip, defaults={'country': country})
             if not created and visitor.country == 'Unknown':
                 visitor.country = country
                 visitor.save()
