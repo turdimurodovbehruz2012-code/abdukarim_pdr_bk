@@ -1,0 +1,32 @@
+<!-- counter/templates/counter/login.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Admin Login</title></head>
+<body>
+    <h2>Admin Kirish</h2>
+    <input type="text" id="username" placeholder="Username"><br><br>
+    <input type="password" id="password" placeholder="Password"><br><br>
+    <button onclick="login()">Kirish</button>
+    <div id="result"></div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const res = await fetch('/api/admin/login/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: username, password: password})
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                window.location.href = '/api/admin/stats/';
+            } else {
+                document.getElementById('result').innerHTML = '<span style="color:red">Xato: ' + data.error + '</span>';
+            }
+        }
+    </script>
+</body>
+</html>
